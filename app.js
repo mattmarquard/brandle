@@ -1,109 +1,60 @@
-;(function(){
-function authInterceptor(API, auth) {
-    return {
-    // automatically attach Authorization header
-    request: function(config) {
-	var token = auth.getToken();
-	if(config.url.indexOf(API) === 0 && token) {
-	    config.headers.Authorization = 'Bearer ' + token;
-	}
-	return config;
-    },
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 
-    // If a token was sent back, save it
-    response: function(res) {
-	if(res.config.url.indexOf(API) === 0 && res.data.token) {
-	    auth.saveToken(res.data.token);
-	}
-	return res;
-	},	
-    }
+var routes = require('./routes/index');
+var users = require('./routes/users');
+
+var app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', routes);
+app.use('/users', users);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
 }
 
-function authService($window) {
-    var self = this;
-    self.parseJwt = function(token) {
-	var base64Url = token.split('.')[1];
-	var base64 = base64Url.replace('-', '+').replace('_', '/');
-	return JSON.parse($window.atob(base64));
-    }
-    self.saveToken = function(token) {
-	$window.localStorage['jwtToken'] = token;
-    }
-    self.getToken = function() {
-	return $window.localStorage['jwtToken'];
-    }
-    self.isAuthed = function() {
-	var token = self.getToken();
-	if(token) {
-	    var params = self.parseJwt(token);
-	   return Math.round(new Date().getTime() / 1000) <= params.exp;
-	} else {
-	    return false;
-	}
-    }
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
 
-    self.logout = function() {
-	$window.localStorage.removeItem('jwtToken');
-    }
-}
 
-function userService($http, API, auth) {
-    var self = this;
-    self.getQuote = function() {
-	return $http.get(API + '/auth/quote')
-    }
-
-    self.register = function(username, password) {
-      return $http.post(API + '/auth/register', {
-	  username: username,
-	  password: password
-	})
-    }
-    self.login = function(username, password) {
-      return $http.post(API + '/auth/login', {
-	  username: username,
-	  password: password
-	})
-    };
-
-}
-
-function MainCtrl(user, auth) {
-    var self = this;
-
-    function handleRequest(res) {
-	var token = res.data ? res.data.token : null;
-	if(token) { console.log('JWT:', token); }
-	self.message = res.data.message;
-    }
-    self.login = function() {
-	user.login(self.username, self.password)
-	.then(handleRequest, handleRequest)
-    }
-    self.register = function() {
-	user.register(self.username, self.password)
-	.then(handleRequest, handleRequest)
-    }
-    self.getQuote = function() {
-	user.getQuote()
-	.then(handleRequest, handleRequest)
-    }
-    self.logout = function() {
-	auth.logout && auth.logout()
-    }
-    self.isAuthed = function() {
-	return auth.isAuthed ? auth.isAuthed() : false
-    }
-}
-
-angular.module('app', [])
-.factory('authInterceptor', authInterceptor)
-.service('user', userService)
-.service('auth', authService)
-.constant('API', 'http://test-routes.herokuapp.com')
-.config(function($httpProvider) {
-    $httpProvider.interceptors.push('authInterceptor');
-})
-.controller('Main', MainCtrl)
-})();
+module.exports = app;
