@@ -93,7 +93,7 @@ function($stateProvider, $urlRouterProvider) {
   };
 
   auth.logOut = function(){
-    $window.localStorage.removeItem('flapper-news-token');
+    $window.localStorage.removeItem('brandle-token');
   };
 
   return auth;
