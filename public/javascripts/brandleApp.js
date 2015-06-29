@@ -148,12 +148,13 @@ function($stateProvider, $urlRouterProvider) {
 .controller('MainCtrl', [
     '$scope',
     'posts',
-    function($scope, posts){
+    'auth',
+    function($scope, posts, auth){
 	$scope.test = 'Hello world!';
 	$scope.posts = posts.posts;
+	$scope.isLoggedIn = auth.isLoggedIn;
 
 	$scope.addPost = function(){
-	  $scope.isLoggedIn = auth.isLoggedIn;
 	  if(!$scope.title || $scope.title === '') { return; }
 	    posts.create({
 	      title: $scope.title,
@@ -171,11 +172,12 @@ function($stateProvider, $urlRouterProvider) {
     '$scope',
     'posts',
     'post',
-    function($scope, posts, post){
+    'auth',
+    function($scope, posts, post, auth){
 	$scope.post = post;
+	$scope.isLoggedIn = auth.isLoggedIn;
 
 	$scope.addComment = function(){
-	  $scope.isLoggedIn = auth.isLoggedIn;
 	  if($scope.body === '') { return; }
 	    posts.addComment(post._id, {
 	      body: $scope.body,
