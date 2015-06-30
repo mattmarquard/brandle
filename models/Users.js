@@ -8,7 +8,7 @@ var UserSchema = new mongoose.Schema({
     salt: String,
     about: String,
     avatar: { data: Buffer, contentType: String },
-    links: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Link' }
+    links: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Link' }]
 });
 
 UserSchema.methods.setPassword = function(password){
