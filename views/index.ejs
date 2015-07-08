@@ -11,7 +11,10 @@
     <script src="/javascripts/controllers/authController.js"></script>
     <script src="/javascripts/controllers/mainController.js"></script>
     <script src="/javascripts/controllers/navController.js"></script>
+    <script src="/javascripts/controllers/userController.js"></script>
+    <script src="/javascripts/services/userService.js"></script>
     <script src="/javascripts/services/authService.js"></script>
+
 
     <style> .glyphicon-thumbs-up { cursor:pointer } </style>
   </head>
@@ -33,6 +36,13 @@
           <div class="page-header">
             <h1>Brandle</h1>
           </div>
+        </script>
+
+        <!--USER-->
+        <script type="text/ng-template" id="/users.html">
+          <div class="page-header">
+            <h1>{{user.about}}</h1>
+          </div>          
         </script>
 
         <!--REGISTER-->
