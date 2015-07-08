@@ -28,6 +28,11 @@ function($stateProvider, $urlRouterProvider) {
           $state.go('home');
         }
       }]
+    })
+    .state('settings', {
+      url: '/settings',
+      templateUrl: '/settings.html',
+      controller: 'MainCtrl',
     });
   $urlRouterProvider.otherwise('home');
 }]);
