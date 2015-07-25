@@ -55,9 +55,9 @@ router.param('username', function(req, res, next, username) {
   });
 
   query.exec(function (err, user){
-    console.log("exec query. got user: " + user[0].username);
+    //console.log("exec query. got user: " + user[0].username);
     console.log(user);
-    console.log("but can't access its properties: " + user[0].username + " " + user[0]['about']);
+    //console.log("but can't access its properties: " + user[0].username + " " + user[0]['about']);
     if (err) { 
       console.log("error");
       return next(err); 
@@ -67,15 +67,15 @@ router.param('username', function(req, res, next, username) {
       console.log("no user");
       return next(new Error('can\'t find user')); 
     }
-    console.log("user was " + user[0].username);
+    //console.log("user was " + user[0].username);
     req.user = user[0];
     return next();
   });
 });
 
-router.get('/users/:username', auth, function(req, res, next) {
+router.get('/users/:username', function(req, res, next) {
   console.log("in /user/username");
-  res.json(req.username);
+  res.json(req.user);
 });
 
 

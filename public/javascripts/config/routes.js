@@ -8,11 +8,21 @@ function($stateProvider, $urlRouterProvider) {
       url: '/home',
       templateUrl: '/home.html',
       controller: 'MainCtrl',
+      onEnter: ['$state', 'auth', function($state, auth){
+        if(auth.isLoggedIn()){
+          $state.go('user', {username:auth.currentUser()});
+        }
+      }]
     })
-    .state('users', {
+    .state('user', {
       url: '/users/{username}',
       templateUrl: '/users.html',
       controller: 'UserCtrl',
+      resolve: {
+         user: ['$stateParams', 'user', function($stateParams, user) {
+          return user.get($stateParams.username);
+        }]
+      }
     })
     .state('login', {
       url: '/login',
